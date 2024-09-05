@@ -1,0 +1,47 @@
+version: '3.9'
+
+services:
+  # Serviço PHP
+  php:
+    build:
+      context: .  # Diretório onde está o Dockerfile
+      dockerfile: Dockerfile  # Nome do Dockerfile
+    container_name: php-inha # nesta linha você define o nome do container PHP
+    ports:
+      - "8000:80" # a porta do apache foi configurada para http://localhost:8000
+    volumes:
+      - ./www:/var/www/html
+    depends_on:
+      - db
+    environment:
+      COMPOSER_ALLOW_SUPERUSER: 1
+
+  # Serviço MySQL
+  db:
+    image: mysql:8.0
+    container_name: mysql_8_0-inha # nesta linha você define o nome do container MySQL
+    environment:
+      MYSQL_ROOT_PASSWORD: marcio1015 # defina sua senha
+      MYSQL_DATABASE: ewerton # defina seu nome de banco de dados
+      MYSQL_USER: user # usuario criado la no arquivo docker-compose.yml
+      MYSQL_PASSWORD: marcio1015 # defina a senha
+    ports:
+      - "3406:3306" # a porta do mySql no lado da máquina host (sua máquina ficou com 3406 - esta configuração foi feita pois já tenho mySql instalado na minha máquina
+    volumes:
+      - db_data:/var/lib/mysql
+
+  # Serviço phpMyAdmin
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin-inha # nesta linha você define o nome do container phpMyAdmin
+    depends_on:
+      - db
+    environment:
+      PMA_HOST: db
+      MYSQL_ROOT_PASSWORD: marcio1015 # sua senha definida
+    ports:
+      - "8080:80" 
+
+# Definição dos volumes
+volumes:
+  db_data:
